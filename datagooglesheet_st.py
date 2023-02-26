@@ -377,7 +377,7 @@ def main():
         start_time=time.time()
         print('\nExport of Excel have started.')
         df2.to_excel(writer, sheet_name="DF", index=False)
-        writer.save()
+        writer.close()
         
     st.sidebar.subheader('Show Graph')
     if st.sidebar.checkbox('Histogram for Groups in the time range', False):
