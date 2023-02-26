@@ -17,8 +17,7 @@ import plotly.express as px
 import streamlit as st
 
 st.title("My School ☀️")
-SHEET_ID=st.text_input(label = "Please enter URL for Data", value='1hr8KiGQ96MeoaOH3MCjgSPHR_MrumXVH')
-#SHEET_ID = str(SHEET_ID)
+SHEET_ID=st.text_input(label = "Please enter SHEET_ID for Data", value='1hr8KiGQ96MeoaOH3MCjgSPHR_MrumXVH')
 SHEET_NAME = 'Data'
 url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
 SHEET_NAME_2 = 'Info'
