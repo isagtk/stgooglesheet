@@ -338,12 +338,12 @@ def main():
         df2['Note']=np.where(df2['Price'].isnull(),"No price",df2['Note'] ) 
         df2['Note']=np.where(df2['Date'].isnull(),"No date",df2['Note'] )
         
-        df2['Total delta'].iloc[0]='Delta: ActualvsScheduled'
+        df2['Total delta']=np.nan
         df2['Total delta'].iloc[1]=correction
-        df2['Total delta'].iloc[3]='Sum:'
-        df2['Total delta'].iloc[4]=sum_r
-        df2['Total delta'].iloc[6]='Sum_Scheduled:'
-        df2['Total delta'].iloc[7]=sum_p        
+        df2['Total sum']=np.nan
+        df2['Total sum'].iloc[1]=sum_r
+        df2['Total scheduled']=np.nan
+        df2['Total delta'].iloc[1]=sum_p        
         df2['Week_no_int']='Summary'
         st.metric(label='Summary', value=f"${sum_r}", delta=correction, delta_color="normal", help=None)
         st.metric(label='Actual', value=f"${sum_r}", delta=None, delta_color="normal", help=None)
