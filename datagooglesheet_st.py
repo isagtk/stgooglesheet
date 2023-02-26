@@ -367,17 +367,21 @@ def main():
     
     
     st.sidebar.subheader(f'With Selection <<{selection_name}>> from <<{selection_group}>> group and the period Generate Output')
-    if st.sidebar.button("Submit"):
-        # ask for input
+    time_str=time.strftime("%Y_%m_%d_%H%M")
+    filename="Invoice_"+time_str + '_' + selection_name + '.xlsx' 
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
+        df2.to_excel(writer, sheet_name=selection_name, index=False)
+        writer.save()    
         
-        
-        time_str=time.strftime("%Y_%m_%d_%H%M")
-        filename="Invoice_"+time_str + '_' + selection_name + '.xlsx'
-        writer=pd.ExcelWriter(filename, engine='xlsxwriter')
-        start_time=time.time()
-        print('\nExport of Excel have started.')
-        df2.to_excel(writer, sheet_name="DF", index=False)
-        writer.close()
+                
+        st.sidebar.download_button(
+            label="Download Excel Output",
+            data=buffer,
+            file_name=filename,
+            mime="application/vnd.ms-excel",
+            )
+
         
     st.sidebar.subheader('Show Graph')
     if st.sidebar.checkbox('Histogram for Groups in the time range', False):
@@ -387,7 +391,6 @@ def main():
     
 
     #================
-
 
 
 if __name__=='__main__':
