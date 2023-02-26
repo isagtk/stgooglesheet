@@ -308,6 +308,7 @@ def main():
      
     df=df_filtered_weeks    
     list_name=['All']+list(set(df['Name']))
+    list_name = [element for element in list_name if str(element) != "nan"]
     selection_name=st.selectbox('Select name:', list_name)
     df.selection_name=selection_name
         
@@ -317,6 +318,7 @@ def main():
         df1=df
     
     group_list=['All']+list(set(df['Group']))
+    group_list = [element for element in group_list if str(element) != "nan"]
     selection_group=st.selectbox('Select group:', group_list)
     df.selection_group=selection_group
     
