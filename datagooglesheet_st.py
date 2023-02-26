@@ -213,7 +213,7 @@ def data_import() -> list:
     df_days['Price']=df_days['Name'].map(dict(zip(df_info['Name'],df_info['Price'])))
     list_teacher=['y', 'yes', 'Y', 'Yes', 'YES', 'T', 't', 'True', 'Teacher', 'teacher', 'TEACHER']
     df_days['Factor_price']=np.where(df_days['Teacher (y or n)'].isin(list_teacher),-1,1 )
-    df_days['Price']=np.where(df_days['Price'].isnull(),0,df_days['Price'] ) 
+    df_days['Price']=np.where((df_days['Price'].isnull()|df_days['Price']==0),0,df_days['Price'] ) 
     list_absent=['y', 'yes', 'Y', 'Yes', 'YES', 'absent', 'Absent', 'ABSENT']
     df_days['Factor_Present/Absence']=np.where(df_days['Absence'].isin(list_absent),-1,1 )
     
