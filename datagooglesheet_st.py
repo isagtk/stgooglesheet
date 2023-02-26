@@ -344,7 +344,7 @@ def main():
         df2['Total sum']=np.nan
         df2['Total sum']=sum_r
         df2['Total scheduled']=np.nan
-        df2['Total delta']=sum_p        
+        df2['Total scheduled']=sum_p        
         df2['Week_no_int']='Summary'
         st.metric(label='Summary', value=f"${sum_r}", delta=correction, delta_color="normal", help=None)
         st.metric(label='Actual', value=f"${sum_r}", delta=None, delta_color="normal", help=None)
