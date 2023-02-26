@@ -15,6 +15,7 @@ from datetime import timedelta
 from datetime import datetime as dt
 import plotly.express as px
 import streamlit as st
+import io
 
 st.title("My School ☀️")
 SHEET_ID=st.text_input(label = "Please enter SHEET_ID for Data", value='1hr8KiGQ96MeoaOH3MCjgSPHR_MrumXVH')
