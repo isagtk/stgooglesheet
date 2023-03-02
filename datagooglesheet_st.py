@@ -316,8 +316,8 @@ def main():
     if selection_name!='All':
         df1=df.loc[df['Name']==selection_name]
     else:
-        df1=df[df['Name']!='nan']
-        df1=df1[df1['Name']!='NAN']
+        df1=df[~df['Name'].isnull()]
+        
         
         
         
