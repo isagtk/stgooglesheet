@@ -316,7 +316,11 @@ def main():
     if selection_name!='All':
         df1=df.loc[df['Name']==selection_name]
     else:
-        df1=df.loc[df['Name']!='nan']    
+        df1=df[df['Name']!='nan']
+        df1=df1[df1['Name']!='NAN']
+        
+        
+        
     group_list=['All']+list(set(df['Group']))
     group_list = [element for element in group_list if str(element) != "nan"]
     selection_group=st.selectbox('Select group:', group_list)
