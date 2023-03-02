@@ -287,7 +287,7 @@ def main():
             st.write('Time range is empty')
         else:
             start_index=week_range[0]-1
-            end_index=week_range[1]-1
+            end_index=week_range[1]
             weeks_selected=weeks[start_index:end_index]
             df_filtered_weeks = df[df['Week_no_int'].isin(weeks_selected)]
 
@@ -316,8 +316,7 @@ def main():
     if selection_name!='All':
         df1=df.loc[df['Name']==selection_name]
     else:
-        df1=df
-    
+        df1=df.loc[df['Name']!='nan']    
     group_list=['All']+list(set(df['Group']))
     group_list = [element for element in group_list if str(element) != "nan"]
     selection_group=st.selectbox('Select group:', group_list)
