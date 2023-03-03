@@ -393,9 +393,9 @@ def main():
         fig=px.bar(group_count, x='Group', y='Sum_R', color='Sum_R', height=500)
         st.plotly_chart(fig)
     
-    st.sidebar.title('Clear')
+    st.sidebar.title('Clear memo')
 
-    if st.sidebar.button('Clear All'):
+    if st.sidebar.button('Clear'):
         # Clear values from *all* memoized functions:
         st.experimental_memo.clear()
     #================
