@@ -24,8 +24,8 @@ url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sh
 SHEET_NAME_2 = 'Info'
 url_2 = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME_2}'
 
-@st.cache(suppress_st_warning=True, allow_output_mutation=True)#(persist=True, suppress_st_warning=True)
-#@st.experimental_memo
+#@st.cache(suppress_st_warning=True, allow_output_mutation=True)#(persist=True, suppress_st_warning=True)
+@st.experimental_memo
 def data_import() -> list:
     global df
     global df_raw
@@ -369,6 +369,11 @@ def main():
     
     st.sidebar.title('Analysis')
     
+    
+    if st.button("Clear All"):
+        # Clear values from *all* memoized functions:
+        # i.e. clear values from both square and cube
+        st.experimental_memo.clear()
     
     st.sidebar.subheader(f'With Selection <<{selection_name}>> from <<{selection_group}>> group and the period Generate Output')
     time_str=time.strftime("%Y_%m_%d_%H%M")
