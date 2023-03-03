@@ -369,10 +369,6 @@ def main():
     
     st.sidebar.title('Analysis')
     
-    st.experimental_memo.clear()
-    if st.button('Clear All'):
-        # Clear values from *all* memoized functions:
-        st.experimental_memo.clear()
     
     st.sidebar.subheader(f'With Selection <<{selection_name}>> from <<{selection_group}>> group and the period Generate Output')
     time_str=time.strftime("%Y_%m_%d_%H%M")
@@ -397,7 +393,11 @@ def main():
         fig=px.bar(group_count, x='Group', y='Sum_R', color='Sum_R', height=500)
         st.plotly_chart(fig)
     
-
+    st.sidebar.title('Clear')
+    st.sidebar.experimental_memo.clear()
+    if st.sidebar.button('Clear All'):
+        # Clear values from *all* memoized functions:
+        st.experimental_memo.clear()
     #================
 
 
