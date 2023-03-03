@@ -370,9 +370,8 @@ def main():
     st.sidebar.title('Analysis')
     
     
-    if st.button("Clear All"):
+    if st.button('Clear All'):
         # Clear values from *all* memoized functions:
-        # i.e. clear values from both square and cube
         st.experimental_memo.clear()
     
     st.sidebar.subheader(f'With Selection <<{selection_name}>> from <<{selection_group}>> group and the period Generate Output')
