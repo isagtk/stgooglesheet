@@ -394,7 +394,7 @@ def main():
         st.plotly_chart(fig)
     
     st.sidebar.title('Clear')
-    st.sidebar.experimental_memo.clear()
+
     if st.sidebar.button('Clear All'):
         # Clear values from *all* memoized functions:
         st.experimental_memo.clear()
