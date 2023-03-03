@@ -369,7 +369,7 @@ def main():
     
     st.sidebar.title('Analysis')
     
-    
+    st.experimental_memo.clear()
     if st.button('Clear All'):
         # Clear values from *all* memoized functions:
         st.experimental_memo.clear()
