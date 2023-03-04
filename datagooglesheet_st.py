@@ -16,20 +16,24 @@ from datetime import datetime as dt
 import plotly.express as px
 import streamlit as st
 import io
+import dateutil.parser as parser
+
 
 st.title("My School ☀️")
-SHEET_ID=st.text_input(label = "Please enter SHEET_ID for Data", value='1hr8KiGQ96MeoaOH3MCjgSPHR_MrumXVH')
+
+SHEET_ID_initial = '1hr8KiGQ96MeoaOH3MCjgSPHR_MrumXVH'
 SHEET_NAME = 'Data'
-url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
 SHEET_NAME_2 = 'Info'
-url_2 = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME_2}'
+
 
 #@st.cache(suppress_st_warning=True, allow_output_mutation=True)#(persist=True, suppress_st_warning=True)
 @st.experimental_memo
-def data_import() -> list:
+def data_import(df_raw, df_info_raw) -> pd.DataFrame():
     global df
-    global df_raw
-    global df_info_raw
+    global df_info
+
+    
+
 
     list_clmn=['1_Monday_Gr', '1_Monday_Name', '1_Monday_IN', '1_Monday_OUT', '1_Monday_Abs', \
            '1_Tuesday_Gr', '1_Tuesday_Name', '1_Tuesday_IN', '1_Tuesday_OUT', '1_Tuesday_Abs', \
@@ -41,17 +45,16 @@ def data_import() -> list:
     dict_clmn=dict(zip(list_clmn,list_clmn))
     print(dict_clmn)
     
-    df = pd.read_csv(url, skip_blank_lines=True)
-    df_raw=df
-    
+     
+    df=df_raw
     list_columns_row=df.columns
     nr_columns=len(df.columns)
     df=df[list_clmn]
     print(df.head())
     
     
-    df_info = pd.read_csv(url_2, skip_blank_lines=True)
-    df_info_raw=df_info
+    
+    df_info=df_info_raw
 
     print(df_info.columns)
     #df_info=df_info.dropna(subset=['Name'])
@@ -83,7 +86,7 @@ def data_import() -> list:
     df['Start date']=np.where(df['Start date'].isnull(),'-',df['Start date']) 
     df['End Date']=df['1_Sunday_Name']
     df['End Date']=np.where(df['End Date'].isnull(),'-',df['End Date'])
-    df['Period']=df['Start date']+'-'+df['End Date']
+    df['Period']=df['Start date'].astype(str)+'-'+df['End Date'].astype(str)
     df['1_Monday_Abs']=np.where(df['1_Monday_Gr']=='Date:',df['Period'],df['1_Monday_Abs'])
     df['1_Tuesday_Abs']=np.where(df['1_Tuesday_Gr']=='Date:',df['Period'],df['1_Tuesday_Abs'])
     df['1_Wednesday_Abs']=np.where(df['1_Wednesday_Gr']=='Date:',df['Period'],df['1_Wednesday_Abs'])
@@ -223,8 +226,13 @@ def data_import() -> list:
             print(i)
             print(bool_empty_Assumption)
             if bool_empty_Assumption==False:
-                df_days['HRS_Scheduled'].iloc[i]=((pd.to_datetime(str(df_days['Date'].iloc[i]) + ' ' + str(df_days['OUT'].iloc[i])))-\
-                                                   (pd.to_datetime(str(df_days['Date'].iloc[i]) + ' ' + str(df_days['IN'].iloc[i])))).total_seconds() / 60 / 60
+                try:
+                    
+                    df_days['HRS_Scheduled'].iloc[i]=((pd.to_datetime(str(df_days['Date'].iloc[i]) + ' ' + str(df_days['OUT'].iloc[i])))-\
+                                                       (pd.to_datetime(str(df_days['Date'].iloc[i]) + ' ' + str(df_days['IN'].iloc[i])))).total_seconds() / 60 / 60
+                except:
+                    df_days['HRS_Scheduled'].iloc[i]=0
+                    df_days['Note'].iloc[i]='Unknown date/time format'
             else:
                 df_days['HRS_Scheduled'].iloc[i]=0
     
@@ -233,25 +241,58 @@ def data_import() -> list:
     df_days['HRS_Delta']=df_days['HRS_Scheduled']*df_days['Factor_Present/Absence']
     df_days['Sum_R']=df_days['Sum_Scheduled']*df_days['Factor_Present/Absence']
 
-    return [df_days.reset_index(drop=True), df_raw, df_info_raw]
-    #return df.reset_index(drop=True)
+    #return [df_days.reset_index(drop=True), df_raw, df_info_raw]
+    return df_days.reset_index(drop=True)
 
 def main():
     global df
+    global df_info
     global df_raw
     global df_info_raw
     
-    list_df=data_import()
     
-    df=list_df[0]
+    #======================
+    
+    page_radionames=['URL Public', 'Local file', 'URL with credentials']
+    page=st.radio('Input', page_radionames, index=0, horizontal=True, label_visibility="visible")
+
+    if page=='URL Public':
+        upload_type='public_type'
+        SHEET_ID=st.text_input(label = "Please enter SHEET_ID for Data", value=SHEET_ID_initial)
+        url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
+        url_2 = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME_2}'   
+        df_raw = pd.read_csv(url, skip_blank_lines=True)
+        df_info_raw = pd.read_csv(url_2, skip_blank_lines=True)           
+    elif page=='URL with credentials':
+        upload_type='credentials_type'
+        uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
+        st.markdown('##### In progress')
+        st.stop()
+    else:
+        upload_type='local_type'
+        uploaded_file = st.file_uploader("My Calendar <<.xlsx>>", type='xlsx', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
+        if uploaded_file is not None:
+            df_raw = df=pd.read_excel(uploaded_file, keep_default_na=False, sheet_name='Data', na_values=None)
+            df_info_raw = pd.read_excel(uploaded_file, keep_default_na=False, sheet_name='Info', na_values=None) 
+        else:
+            st.stop()           
+       #======================    
+
+    
+    df=data_import(df_raw, df_info_raw)
+
     df.dropna()
+    df['Note']=np.where((df['Note'].isnull())&(df['Price'].isnull()),"No price",df['Note'] ) 
+    df['Note']=np.where((df['Note'].isnull())&(df['Date'].isnull()),"No date",df['Note'] )
+    
+           
     print('test')
     print(df)
-    df_data=list_df[1]
-    df_info=list_df[2]
+    
+    df_info=df_info_raw
 
     file_container1 = st.expander("<<Data>>")
-    shows = df_data
+    shows = df_raw
     file_container1.write(shows)
     dict_range={
             '1st week':1,
@@ -276,6 +317,25 @@ def main():
     shows2 = df_info
     file_container2.write(shows2)
     
+    
+    list_errors=['Unknown date/time format', 'No price', 'No date']
+    df_errors=df[df['Note'].isin(list_errors)]
+    df_errors=df_errors[~df_errors['Name'].isnull()]
+    df_errors=df_errors[['Note', 'Name', 'Date', 'IN', 'OUT', 'Price']]
+    if len(df_errors) > 0:
+        file_container_errors = st.expander("Errors were found")
+        file_container_errors.write(df_errors)
+        for i in range(0,len(df_errors.index)):
+            try:
+                df_errors['IN'].iloc[i]=parser.parse(df_errors['IN'].iloc[i],dayfirst = True)
+            except:
+                pass
+            try:
+                df_errors['OUT'].iloc[i]=parser.parse(df_errors['OUT'].iloc[i],dayfirst = True)
+            except:
+                pass
+    
+    
     selection_weeks=st.radio('Time range by', ('Week no', 'Date'), index=0, horizontal=True, label_visibility="visible")
     if selection_weeks=='Week no':
         weeks=list(range(1, 14))
@@ -287,7 +347,7 @@ def main():
             st.write('Time range is empty')
         else:
             start_index=week_range[0]-1
-            end_index=week_range[1]
+            end_index=week_range[1]-1
             weeks_selected=weeks[start_index:end_index]
             df_filtered_weeks = df[df['Week_no_int'].isin(weeks_selected)]
 
@@ -317,10 +377,7 @@ def main():
         df1=df.loc[df['Name']==selection_name]
     else:
         df1=df[~df['Name'].isnull()]
-        
-        
-        
-        
+    
     group_list=['All']+list(set(df['Group']))
     group_list = [element for element in group_list if str(element) != "nan"]
     selection_group=st.selectbox('Select group:', group_list)
@@ -339,8 +396,9 @@ def main():
     df2['Total delta']=np.nan
 
     if len(df2) > 0:
-        df2['Note']=np.where(df2['Price'].isnull(),"No price",df2['Note'] ) 
-        df2['Note']=np.where(df2['Date'].isnull(),"No date",df2['Note'] )
+        
+        df2['Note']=np.where((df2['Note'].isnull())&(df2['Price'].isnull()),"No price",df2['Note'] ) 
+        df2['Note']=np.where((df2['Note'].isnull())&(df2['Date'].isnull()),"No date",df2['Note'] )
         
         df2['Total delta']=np.nan
         df2.loc[-1,'Total delta']=correction
@@ -349,6 +407,7 @@ def main():
         df2['Total scheduled']=np.nan
         df2.loc[-1,'Total scheduled']=sum_p        
         df2['Week_no_int']='Summary: last row of <T>, <U>, <V>'
+        
         st.metric(label='Summary', value=f"${sum_r}", delta=correction, delta_color="normal", help=None)
         st.metric(label='Actual', value=f"${sum_r}", delta=None, delta_color="normal", help=None)
         st.metric(label='Scheduled', value=f"${sum_p}", delta=None, delta_color="normal", help=None)
@@ -369,10 +428,12 @@ def main():
     
     st.sidebar.title('Analysis')
     
+
     
     st.sidebar.subheader(f'With Selection <<{selection_name}>> from <<{selection_group}>> group and the period Generate Output')
     time_str=time.strftime("%Y_%m_%d_%H%M")
-    filename="Invoice_"+time_str + '_' + selection_name + '.xlsx' 
+    filename="Invoice_"+time_str + '_' + selection_name + '.xlsx'
+    filename2="Errors_"+time_str + '.xlsx'
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
         df2.to_excel(writer, sheet_name=selection_name, index=False)
@@ -385,20 +446,39 @@ def main():
             file_name=filename,
             mime="application/vnd.ms-excel",
             )
-
         
     st.sidebar.subheader('Show Graph')
     if st.sidebar.checkbox('Histogram for Groups in the time range', False):
         st.markdown('## Sums by Groups')
         fig=px.bar(group_count, x='Group', y='Sum_R', color='Sum_R', height=500)
         st.plotly_chart(fig)
-    
+
+
     st.sidebar.title('Clear memo')
 
     if st.sidebar.button('Clear'):
         # Clear values from *all* memoized functions:
         st.experimental_memo.clear()
+    
+    st.sidebar.title('Errors in Input Data')
+    if len(df_errors) > 0:
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer2:
+            df_errors.to_excel(writer2, index=False)
+            writer2.save()    
+            
+                    
+            st.sidebar.download_button(
+                label="Download Input Errors",
+                data=buffer,
+                file_name=filename2,
+                mime="application/vnd.ms-excel",
+                )
+    else:
+        st.markdown('## No input errors')
+
     #================
+
 
 
 if __name__=='__main__':
