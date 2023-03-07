@@ -17,7 +17,7 @@ import plotly.express as px
 import streamlit as st
 import io
 import dateutil.parser as parser
-import gspread
+
 
 st.title("My School ☀️")
 
@@ -264,6 +264,7 @@ def main():
         df_raw = pd.read_csv(url, skip_blank_lines=True)
         df_info_raw = pd.read_csv(url_2, skip_blank_lines=True)           
     elif page=='URL with credentials':
+        import gspread
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
         gspread_client = gspread.service_account(filename=uploaded_json)
