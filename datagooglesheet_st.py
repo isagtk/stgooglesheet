@@ -266,7 +266,7 @@ def main():
     elif page=='URL with credentials':
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
-         gspread_client = gspread.service_account(filename=uploaded_json)
+        gspread_client = gspread.service_account(filename=uploaded_json)
         spreadsheets = gspread_client.openall()
         if spreadsheets:
             print("Available spreadsheets:")
