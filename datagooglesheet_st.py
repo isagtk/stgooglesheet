@@ -17,7 +17,7 @@ import plotly.express as px
 import streamlit as st
 import io
 import dateutil.parser as parser
-
+import gspread
 
 st.title("My School ☀️")
 
