@@ -268,10 +268,7 @@ def main():
         
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
-        #pandas.read_json(uploaded_json)
-        file_container3 = st.expander("<<JSON FILE>>")
-        file_container3.write(pandas.read_json(uploaded_json))
-        
+       
         try:
             gspread_client = gspread.service_account(filename=uploaded_jsons, scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
         except:
