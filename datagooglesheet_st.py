@@ -266,8 +266,24 @@ def main():
     elif page=='URL with credentials':
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
-        st.markdown('##### In progress')
-        st.stop()
+         gspread_client = gspread.service_account(filename=uploaded_json)
+        spreadsheets = gspread_client.openall()
+        if spreadsheets:
+            print("Available spreadsheets:")
+            for spreadsheet in spreadsheets:
+                print("Title:", spreadsheet.title, "URL:", spreadsheet.url)
+            sh = gspread_client.open_by_url(spreadsheet.url)
+            worksheet_data = sh.get_worksheet(0)
+            worksheet_info = sh.get_worksheet(1)
+            rows_data = worksheet_data.get_all_records()
+            rows_info = worksheet_info.get_all_records()
+            df_raw  = pd.DataFrame(rows_data)
+            df_info_raw = pd.DataFrame(rows_info)
+        
+        else:
+            print("No spreadsheets available")
+        
+            st.stop()
     else:
         upload_type='local_type'
         uploaded_file = st.file_uploader("My Calendar <<.xlsx>>", type='xlsx', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
