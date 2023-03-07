@@ -269,8 +269,7 @@ def main():
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
         try:
-            gspread_client = gspread.service_account(filename=uploaded_jsons, copes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'], client_factory=<class
-'gspread.client.Client'>)
+            gspread_client = gspread.service_account(filename=uploaded_jsons, copes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
         except:
             print('gspread.service_account failed')
             st.stop()
