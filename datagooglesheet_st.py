@@ -268,16 +268,20 @@ def main():
         
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
+        pandas.read_json(uploaded_json)
+        file_container3 = st.expander("<<JSON FILE>>")
+        file_container3.write(pandas.read_json(uploaded_json))
+        
         try:
-            gspread_client = gspread.service_account(filename=uploaded_jsons, copes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
+            gspread_client = gspread.service_account(filename=uploaded_jsons, scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
         except:
-            print('gspread.service_account failed')
+            st.write('gspread.service_account failed')
             st.stop()
         spreadsheets = gspread_client.openall()
         if spreadsheets:
             print("Available spreadsheets:")
             for spreadsheet in spreadsheets:
-                print("Title:", spreadsheet.title, "URL:", spreadsheet.url)
+                st.write("Title:", spreadsheet.title, "URL:", spreadsheet.url)
             sh = gspread_client.open_by_url(spreadsheet.url)
             worksheet_data = sh.get_worksheet(0)
             worksheet_info = sh.get_worksheet(1)
@@ -287,7 +291,7 @@ def main():
             df_info_raw = pd.DataFrame(rows_info)
         
         else:
-            print("No spreadsheets available")
+            st.write("No spreadsheets available")
         
             st.stop()
     else:
