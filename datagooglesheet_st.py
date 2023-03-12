@@ -279,7 +279,7 @@ def main():
         creds = None
         if uploaded_json is not None:
             file_name = uploaded_json
-            with NamedTemporaryFile(dir='.', suffix='.csv') as f:
+            with NamedTemporaryFile(dir='.', suffix='.json') as f:
                 f.write(uploaded_json.getbuffer())
                 path_json=f.name            
 
