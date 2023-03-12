@@ -18,6 +18,7 @@ import streamlit as st
 import io
 import dateutil.parser as parser
 import gspread
+from google.oauth2.credentials import Credentials
 from google.oauth2.service_account import Credentials
 
 st.title("My School ☀️")
