@@ -277,6 +277,7 @@ def main():
         
         creds = None
         if uploaded_json is not None:
+            file_name = uploaded_json
             path_json=uploaded_json.name
             creds=Credentials.from_service_account_file(path_json, scopes=Scopes)
 
@@ -305,6 +306,7 @@ def main():
                 st.stop()
 
         else:
+            file_name = 'ForClrn.json'
             st.stop()
 
 
