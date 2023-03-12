@@ -323,7 +323,6 @@ def main():
     df=data_import(df_raw, df_info_raw)
 
     df.dropna()
-    df_days['Note'].iloc[i]='Unknown date/time format'
     df['Note']=np.where((df['Note']=='Unknown date/time format')&(df['Price'].isnull()),"Unknown date/time format, No price",df['Note'] ) 
     df['Note']=np.where((df['Note'].isnull())&(df['Price'].isnull()),"No price",df['Note'] ) 
     df['Note']=np.where((df['Note'].isnull())&(df['Date'].isnull()),"No date",df['Note'] )
