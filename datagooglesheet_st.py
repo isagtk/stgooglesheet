@@ -323,6 +323,8 @@ def main():
     df=data_import(df_raw, df_info_raw)
 
     df.dropna()
+    df_days['Note'].iloc[i]='Unknown date/time format'
+    df['Note']=np.where((df['Note']=='Unknown date/time format')&(df['Price'].isnull()),"Unknown date/time format, No price",df['Note'] ) 
     df['Note']=np.where((df['Note'].isnull())&(df['Price'].isnull()),"No price",df['Note'] ) 
     df['Note']=np.where((df['Note'].isnull())&(df['Date'].isnull()),"No date",df['Note'] )
     df['Note']=np.where((df['Note'].isnull())&(df['HRS_Scheduled']<0),"IN later than OUT",df['Note'] )
@@ -359,8 +361,7 @@ def main():
     shows2 = df_info
     file_container2.write(shows2)
     
-    
-    list_errors=['Unknown date/time format', 'No price', 'No date']
+    list_errors=['Unknown date/time format', 'No price', 'No date', 'IN later than OUT', 'No price, IN later than OUT', 'Unknown date/time format, No price']
     df_errors=df[df['Note'].isin(list_errors)]
     df_errors=df_errors[~df_errors['Name'].isnull()]
     df_errors=df_errors[['Note', 'Name', 'Date', 'IN', 'OUT', 'Price']]
@@ -438,9 +439,6 @@ def main():
     df2['Total delta']=np.nan
 
     if len(df2) > 0:
-        
-        df2['Note']=np.where((df2['Note'].isnull())&(df2['Price'].isnull()),"No price",df2['Note'] ) 
-        df2['Note']=np.where((df2['Note'].isnull())&(df2['Date'].isnull()),"No date",df2['Note'] )
         
         df2['Total delta']=np.nan
         df2.loc[-1,'Total delta']=correction
