@@ -20,6 +20,7 @@ import dateutil.parser as parser
 import gspread
 from google.oauth2.credentials import Credentials
 from google.oauth2.service_account import Credentials
+from tempfile import NamedTemporaryFile
 
 st.title("My School ☀️")
 
@@ -278,7 +279,10 @@ def main():
         creds = None
         if uploaded_json is not None:
             file_name = uploaded_json
-            path_json=file_name.name
+            with NamedTemporaryFile(dir='.', suffix='.csv') as f:
+                f.write(uploaded_json.getbuffer())
+                path_json=f.name            
+
             st.write(path_json)
             creds=Credentials.from_service_account_file(path_json, scopes=Scopes)
 
