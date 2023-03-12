@@ -278,7 +278,7 @@ def main():
         creds = None
         if uploaded_json is not None:
             file_name = uploaded_json
-            st.write(ile_name)
+            st.write(file_name)
             path_json=file_name.name
             creds=Credentials.from_service_account_file(path_json, scopes=Scopes)
 
