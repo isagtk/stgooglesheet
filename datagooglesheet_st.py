@@ -325,7 +325,8 @@ def main():
     df.dropna()
     df['Note']=np.where((df['Note'].isnull())&(df['Price'].isnull()),"No price",df['Note'] ) 
     df['Note']=np.where((df['Note'].isnull())&(df['Date'].isnull()),"No date",df['Note'] )
-    
+    df['Note']=np.where((df['Note'].isnull())&(df['HRS_Scheduled']<0),"IN later than OUT",df['Note'] )
+    df['Note']=np.where((df['Price'].isnull())&(df['HRS_Scheduled']<0),"No price, IN later than OUT",df['Note'] )
            
     print('test')
     print(df)
