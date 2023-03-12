@@ -18,7 +18,7 @@ import streamlit as st
 import io
 import dateutil.parser as parser
 import gspread
-import json
+from google.oauth2.service_account import Credentials
 
 st.title("My School ☀️")
 
@@ -268,30 +268,38 @@ def main():
         
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
+        
+        Scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']      
+        creds = None
         if uploaded_json is not None:
+            path_json=uploaded_json.name
+            creds=Credentials.from_service_account_file(path_json, scopes=Scopes)
+
             try:
-                gspread_client = gspread.service_account(filename=uploaded_json, scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
+                client=gspread.authorize(creds)
+                spreadsheets = client.openall()
+                if spreadsheets:
+                    print("Available spreadsheets:")
+                    for spreadsheet in spreadsheets:
+                        st.write("Name:", spreadsheet.title, "URL:", spreadsheet.url)
+                    #The last sh will be open
+                    sh = client.open_by_url(spreadsheet.url)
+                    worksheet_data = sh.get_worksheet(0)
+                    worksheet_info = sh.get_worksheet(1)
+                    rows_data = worksheet_data.get_all_records()
+                    rows_info = worksheet_info.get_all_records()
+                    df_raw  = pd.DataFrame(rows_data)
+                    df_info_raw = pd.DataFrame(rows_info)
+                
+                else:
+                    print("No spreadsheets available")
+                    st.stop()
+
             except:
-                st.write('gspread.service_account failed')
+                st.write('Credentials failed')
                 st.stop()
+
         else:
-            st.stop()
-        spreadsheets = gspread_client.openall()
-        if spreadsheets:
-            print("Available spreadsheets:")
-            for spreadsheet in spreadsheets:
-                st.write("Title:", spreadsheet.title, "URL:", spreadsheet.url)
-            sh = gspread_client.open_by_url(spreadsheet.url)
-            worksheet_data = sh.get_worksheet(0)
-            worksheet_info = sh.get_worksheet(1)
-            rows_data = worksheet_data.get_all_records()
-            rows_info = worksheet_info.get_all_records()
-            df_raw  = pd.DataFrame(rows_data)
-            df_info_raw = pd.DataFrame(rows_info)
-        
-        else:
-            st.write("No spreadsheets available")
-        
             st.stop()
     else:
         upload_type='local_type'
