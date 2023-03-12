@@ -514,7 +514,7 @@ def main():
                 mime="application/vnd.ms-excel",
                 )
     else:
-        st.markdown('## No input errors')
+        st.sidebar.markdown('## No input errors')
 
     #================
 
