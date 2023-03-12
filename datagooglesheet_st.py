@@ -270,7 +270,11 @@ def main():
         upload_type='credentials_type'
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
         
-        Scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']      
+        Scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+
+        print('uploaded_json')
+        print(uploaded_json)
+        
         creds = None
         if uploaded_json is not None:
             path_json=uploaded_json.name
@@ -302,6 +306,9 @@ def main():
 
         else:
             st.stop()
+
+
+       
     else:
         upload_type='local_type'
         uploaded_file = st.file_uploader("My Calendar <<.xlsx>>", type='xlsx', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
