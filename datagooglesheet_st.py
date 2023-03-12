@@ -20,7 +20,8 @@ import dateutil.parser as parser
 import gspread
 from google.oauth2.credentials import Credentials
 from google.oauth2.service_account import Credentials
-from tempfile import NamedTemporaryFile
+import json
+from google.oauth2 import service_account
 
 st.title("My School ☀️")
 
@@ -272,19 +273,12 @@ def main():
         uploaded_json = st.file_uploader("My Credentials", type='json', accept_multiple_files=False, key=None, help=None, on_change=None, args=None, kwargs=None, disabled=False, label_visibility="visible")
         
         Scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-
-        print('uploaded_json')
-        print(uploaded_json)
         
         creds = None
         if uploaded_json is not None:
-            file_name = uploaded_json
-            with NamedTemporaryFile(dir='.', suffix='.json') as f:
-                f.write(uploaded_json.getbuffer())
-                path_json=f.name            
-
-            st.write(path_json)
-            creds=Credentials.from_service_account_file(path_json, scopes=Scopes)
+            st.write(uploaded_json)
+            info_json =json.load(uploaded_json)
+            creds=service_account.Credentials.from_service_account_info(info_json, scopes=Scopes)
 
             try:
                 client=gspread.authorize(creds)
@@ -311,7 +305,6 @@ def main():
                 st.stop()
 
         else:
-            file_name = 'ForClrn.json'
             st.stop()
 
 
