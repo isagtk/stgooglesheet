@@ -191,7 +191,7 @@ def data_import(df_raw, df_info_raw) -> pd.DataFrame():
         df_day['Week no']=week_no
         df_day['Date']=day_date    
         df_day['Day_of_week']=day_week
-        df_day['Teacher (y or n)']=np.nan
+        df_day['If teacher - y']=np.nan
         df_day['Factor_price']=np.nan 
         df_day['Price']=np.nan
         df_day['HRS_Scheduled']=np.nan
@@ -208,7 +208,7 @@ def data_import(df_raw, df_info_raw) -> pd.DataFrame():
     
     df_days=df_days[df_days['Name']!='']
     df_days=df_days[['Week no','Date', 'Day_of_week', 'Period', 'Group', 'Name', \
-                                'Teacher (y or n)', 'Factor_price', 'Price', \
+                                'If teacher - y', 'Factor_price', 'Price', \
                                 'IN','OUT',  'HRS_Scheduled', 'Sum_Scheduled', \
                                 'Absence', 'Factor_Present/Absence', \
                                 'HRS_Delta', 'Sum_R', 'Note']]
@@ -216,10 +216,10 @@ def data_import(df_raw, df_info_raw) -> pd.DataFrame():
     df_days.reset_index(drop=True, inplace=True)
     
     #Calculate/add values
-    df_days['Teacher (y or n)']=df_days['Name'].map(dict(zip(df_info['Name'],df_info['Teacher (y or n)'])))
+    df_days['If teacher - y']=df_days['Name'].map(dict(zip(df_info['Name'],df_info['If teacher - y'])))
     df_days['Price']=df_days['Name'].map(dict(zip(df_info['Name'],df_info['Price'])))
     list_teacher=['y', 'yes', 'Y', 'Yes', 'YES', 'T', 't', 'True', 'Teacher', 'teacher', 'TEACHER']
-    df_days['Factor_price']=np.where(df_days['Teacher (y or n)'].isin(list_teacher),-1,1 )
+    df_days['Factor_price']=np.where(df_days['If teacher - y'].isin(list_teacher),-1,1 )
     df_days['Price']=np.where((df_days['Price'].isnull()|df_days['Price']==0),0,df_days['Price'] ) 
     list_absent=['y', 'yes', 'Y', 'Yes', 'YES', 'absent', 'Absent', 'ABSENT']
     df_days['Factor_Present/Absence']=np.where(df_days['Absence'].isin(list_absent),-1,1 )
